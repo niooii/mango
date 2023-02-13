@@ -130,6 +130,8 @@ public class Listeners extends ListenerAdapter {
             return finaltime;
         }
     }
+    
+    //google api copied from google bc im professional copy paster
 
     private static final String APPLICATION_NAME = "Google Classroom API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -181,6 +183,15 @@ public class Listeners extends ListenerAdapter {
             String msgSent = event.getMessage().getContentRaw();
             String mention = event.getAuthor().getAsMention();
             String name = event.getAuthor().getName();
+            
+            if(msgSent.toLowerCase().startsWith("echo")){
+                String chnlid = event.getChannel().getId();
+                // for later event.getChannel().sendMessage(msgSent.substring(msgSent.indexOf(" ", msgSent.indexOf(" ") + 1))).queue();
+                event.getMessage().delete().queue();
+                event.getChannel().sendMessage(msgSent.substring(msgSent.indexOf(" "))).queue();
+
+                return;
+            }
 
             if(msgSent.contains("assignments")){
                 event.getChannel().sendMessage("fetching assignments...").queue();
