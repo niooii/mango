@@ -3,6 +3,7 @@ package yes;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class Main {
@@ -14,11 +15,13 @@ public class Main {
     public static void main(String[] args) {
 
 
-        JDA bot = JDABuilder.createDefault("token goes here", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+        JDA bot = JDABuilder.createDefault("MTA3NDE2MDMzNzA0NzI1NzE3OA.GUPzm1.KwsghXVVSlK6hTNpXnPj0psWlOcyU5bcVA4Af0", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.playing("piano"))
                 .setStatus(OnlineStatus.IDLE)
                 .addEventListeners(new Listeners())
                 .build();
+
+
 
         Guild server = bot.getGuildById("1074156189513945179");
 

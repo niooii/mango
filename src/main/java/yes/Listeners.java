@@ -18,7 +18,8 @@ import com.google.api.services.classroom.model.ListCourseWorkResponse;
 import com.google.api.services.classroom.model.ListCoursesResponse;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -30,23 +31,16 @@ import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-
 import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 
 public class Listeners extends ListenerAdapter {
+
 
     public static String getDate(){
         SimpleDateFormat dnt = new SimpleDateFormat("MM/dd/yy:HH:mm");
@@ -90,6 +84,14 @@ public class Listeners extends ListenerAdapter {
         System.out.println("time being formatted: " + time);
         System.out.println("hours: " + hours);
         return hours + time.substring(getTime().indexOf(":")) + " " + pmam;
+    }
+
+    public static int subtract5hrs(int hours){
+        for(int i = 0; i < 5; i++){
+            hours--;
+            if(hours < 0) hours = 23;
+        }
+        return hours;
     }
 
     public String formatDate(String date){
@@ -178,11 +180,59 @@ public class Listeners extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-        String msgId = "";
+        //String msgId = "";
         if(!event.getAuthor().isBot()){
             String msgSent = event.getMessage().getContentRaw();
+            int sindex1 = msgSent.indexOf(" ");
+            int sindex2 = msgSent.indexOf(" ", msgSent.indexOf(" ") + 1);
             String mention = event.getAuthor().getAsMention();
             String name = event.getAuthor().getName();
+
+            if(msgSent.toLowerCase().equals("!docs")){
+
+            }
+
+
+
+            if(msgSent.equalsIgnoreCase("!register")){
+
+                try {
+                    gamblingaddict config = new gamblingaddict();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if(yes.gamblingaddict.getMap() == null){
+                    event.getChannel().sendMessage("hashmap is null").queue();
+                    return;
+                }
+
+                for(HashMap.Entry<String, HashMap<String, String>> entry : yes.gamblingaddict.getMap().entrySet()) {
+                    String key = entry.getKey();
+                    if(key.equalsIgnoreCase(event.getAuthor().getId())){
+                        EmbedBuilder embed = new EmbedBuilder();
+                        embed.setTitle(name + " has already registered!");
+                        embed.setColor(Color.RED);
+                        embed.setDescription("do !stats to view your stats.");
+                        event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                        return;
+                    }
+                }
+
+
+
+                yes.gamblingaddict.createUser(event.getAuthor().getId());
+
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setTitle(name + " has successfully registered!");
+                embed.setDescription("your registered id: ||" + event.getAuthor().getId() + "||");
+                embed.addField(
+                        new MessageEmbed.Field("current cash", yes.gamblingaddict.getMap().get(event.getAuthor().getId()).get("CurrentCash"), false));
+                embed.setColor(Color.WHITE);
+                embed.setFooter("sent at " + getFormattedTime() ); //"https://cdn.discordapp.com/attachments/975541046329114654/1074523115897495562/image_2.png"
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+
+            }
             
             if(msgSent.toLowerCase().startsWith("echo")){
                 String chnlid = event.getChannel().getId();
@@ -192,6 +242,91 @@ public class Listeners extends ListenerAdapter {
 
                 return;
             }
+            /*
+            if(msgSent.toLowerCase().startsWith("renameall")){
+                for(Member x : event.getGuild().getMember())
+                event.getGuild().getMember().modifyNickname()
+            }
+
+             */
+
+            if(msgSent.toLowerCase().startsWith("createtextchnl")){
+
+
+                String categoryID = "";
+                String categoryname = msgSent.substring(sindex2 + 1);
+                System.out.println(categoryname);
+                if(sindex2 == -1){
+                    event.getGuild().createTextChannel(msgSent.substring(msgSent.indexOf(" "))).queue();
+                } else{
+                    String chnlname2 = msgSent.substring(sindex1 + 1, sindex2);
+                    //event.getGuild().createCategory(msgSent.substring(sindex1))
+                    for(Category x : event.getGuild().getCategories()){
+                        if(x.getName().equalsIgnoreCase(categoryname)){
+                            categoryID = x.getId();
+                            break;
+                        }
+                    }
+                    event.getGuild().createTextChannel(chnlname2, event.getGuild().getCategoryById(categoryID)).queue();
+                    if(categoryID.equalsIgnoreCase("")){
+                        event.getChannel().sendMessage("channel not found.......").queue();
+                    }
+
+
+
+                }
+
+
+            }
+
+            if(msgSent.toLowerCase().startsWith("createvoicechnl")){
+
+
+                String categoryID = "";
+                String categoryname = msgSent.substring(sindex2 + 1);
+                System.out.println(categoryname);
+                if(sindex2 == -1){
+                    event.getGuild().createVoiceChannel(msgSent.substring(msgSent.indexOf(" "))).queue();
+                } else{
+                    String chnlname2 = msgSent.substring(sindex1 + 1, sindex2);
+                    //event.getGuild().createCategory(msgSent.substring(sindex1))
+                    for(Category x : event.getGuild().getCategories()){
+                        if(x.getName().equalsIgnoreCase(categoryname)){
+                            categoryID = x.getId();
+                            break;
+                        }
+                    }
+                    event.getGuild().createVoiceChannel(chnlname2, event.getGuild().getCategoryById(categoryID)).queue();
+
+
+
+                }
+
+
+            }
+
+            if(msgSent.toLowerCase().startsWith("deletechnl")){
+
+                String targetname = msgSent.substring(msgSent.indexOf(" ") + 1).toLowerCase();
+                System.out.println("made it here!");
+                System.out.println(targetname);
+                for(GuildChannel chnl : event.getGuild().getChannels()){
+                    System.out.println(chnl.getName().toLowerCase());
+                    if(chnl.getName().toLowerCase().equals(targetname)){
+                        System.out.println("in loop!");
+                        chnl.delete().queue();
+                        break;
+                    }
+                }
+                return;
+            }
+
+            if(msgSent.toLowerCase().startsWith("history")){
+                event.getChannel().getHistory().size();
+                event.getChannel().sendMessage(event.getChannel().getHistory().toString() + "size: " + event.getChannel().getHistory().size()).queue();
+            }
+
+
 
             if(msgSent.contains("assignments")){
                 event.getChannel().sendMessage("fetching assignments...").queue();
@@ -309,12 +444,14 @@ public class Listeners extends ListenerAdapter {
                                     timeString = formatTime(assignmentMap.get(key).get(i).getDueTime().toString());
                                     //get month number
                                     courseMonth = Integer.parseInt(dateString.substring(0, dateString.indexOf("/")));
+                                    //get hour due
+                                    int temp = Integer.parseInt(timeString.substring(0, timeString.indexOf(":")));
+                                    courseHour = subtract5hrs(temp);
                                     //get day number
                                     courseDay = Integer.parseInt(dateString.substring(dateString.indexOf("/") + 1, dateString.indexOf("/", dateString.indexOf("/") + 1)));
+                                    if(courseHour < temp) courseDay -= 1;
                                     //get year number
                                     courseYear = Integer.parseInt(dateString.substring(dateString.indexOf("/", dateString.indexOf("/") + 1) + 1));
-                                    //get hour due
-                                    courseHour = Integer.parseInt(timeString.substring(0, timeString.indexOf(":")));
                                     //get minute due
                                     courseMinute = Integer.parseInt(timeString.substring(timeString.indexOf(":") + 1));
 
