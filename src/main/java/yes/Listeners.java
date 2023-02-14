@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.io.*;
@@ -179,14 +180,51 @@ public class Listeners extends ListenerAdapter {
     boolean breakk = false;
 
     @Override
-    public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+    public void onMessageReceived(@NotNull MessageReceivedEvent event) { // wtf
         //String msgId = "";
         if(!event.getAuthor().isBot()){
+            if(event.getChannel().getId().equals("1074562861407416410")){ //no life server
+                return;
+            }
+
+            if(event.getChannel().getId().equals("1041392248073494618")){ //brainbert server
+                return;
+            }
+
+
             String msgSent = event.getMessage().getContentRaw();
             int sindex1 = msgSent.indexOf(" ");
             int sindex2 = msgSent.indexOf(" ", msgSent.indexOf(" ") + 1);
             String mention = event.getAuthor().getAsMention();
             String name = event.getAuthor().getName();
+
+            if(msgSent.equalsIgnoreCase("bye")){
+                event.getChannel().sendMessage("Until you can tear and burn the bible to escape the EVIL ONE, it will be impossible for your educated stupid brain to know that 4 different corner harmonic 24 hour Days rotate simultaneously within a single 4 quadrant rotation of a squared equator and cubed Earth. The Solar system, the Universe, the Earth and all humans are composed of + 0 - antipodes, and equal to nothing if added as a ONE or Entity. All Creation occurs between Opposites. Academic ONEism destroys +0- brain. If you would acknowledge simple existing math proof that 4 harmonic corner days rotate simultaneously around squared equator and cubed Earth, proving 4 Days, Not 1Day,1Self,1Earth or 1God that exists only as anti-side. This page you see - cannot exist without its anti-side existence, as +0- antipodes. Add +0- as One = nothing.").queue();
+                event.getChannel().sendMessage("Seek Awesome Lectures, MY WISDOM DEBUNKS GODS OF ALL RELIGIONS AND ACADEMIA.\n" +
+                        "\n" +
+                        "We have a Major Problem, Creation is Cubic Opposites, 2 Major Corners & 2 Minor. Mom/Dad & Son/Daughter, NOT taught Evil ONEism, which VOIDS Families.").queue();
+                event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
+                event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
+                event.getChannel().sendMessage("Evil God Believers refuse to acknowledge 4 corner Days rotating simultaneously around 4 quadrant created Earth - in only 1 rotation, voiding the Oneism Evil 1 Day 1 God. You worship Satanic impostor guised by educators as 1 god.\n" +
+                        "\n" +
+                        "No 1 God equals 4 - 24 hour Days Rotating Simultaneously within 1- 24 hour Rotation of 4 quadrant created Earth. Ignoring 4 Corner Earth Days will Destroy Evil Humanity. I am organizing Children to join \"Cubic Army of 4 Days\" to convert Evil 1 Day Adults to 4 Day mentality existence, to serve perpetual humanity.\n" +
+                        "\n" +
+                        "\"Nothing on Earth more Evil than a human educated as 1, when composed of opposites that cancel out as an entity.\" In fact, man is the only 1 Evil, and will soon erase himself by ignoring Cubic 4 Day Creation. If a Man cannot tear a page from the bible and burn it - then he cannot be a scientist, or participate in Symposium - to measure Cubing of Earth with Cubic intelligence wiser than any man or god known. Educators have destroyed the human analytical brain to a single perspective, in spite of all creation within Universe being based upon opposites, binaries & antipodes, including Sun/Earth binary relative to the\n" +
+                        "\n" +
+                        "human male/female binary. No ancient insignificant dead 1 Jew godism can match or exceed the enormity of the Sun/Earth Binary. His heart is not big enough for sharing with the vastness of created opposites. 1 has no heart beat or breath, constituting death of opposites. God in Human form has human\n" +
+                        "\n" +
+                        "limits as body controls activity. You are taught Evil, You act Evil, You are the Evil on Earth. Only your comprehending the Divinity of Cubic Creation will your soul be saved from your created hell on Earth - induced by your ignoring the existing 4 corner harmonic simultaneous 4 Days rotating in a single cycle of the Earth sphere. Religious/ Academic Pedants cannot allow 4 Days that contradict 1Day 1God. Educators destroy your brain, but you don't know, so why care?").queue();
+                event.getChannel().sendMessage("Creation ocurrs via opposites, but Religious/Academia pedants suppress it teaching Satanic One.\n" +
+                        "\n" +
+                        "After 30 years of research, I now possess the Order of Harmonic Antipodal Cubic Divinity Life - too large for physical form, but Binary Spirit of the masculinity Sun & feminity Earth Antipodes. ONEism is demonic Death Math. I have so much to teach you, but you ignore me you evil asses. You will recognize 4 corner Days or incur Easter Island Ending.\n" +
+                        "\n" +
+                        "Never a Genius knew Math to achieve my Cubic Wisdom. Cubic thought Reigns as the Highest Intelligence possible on the planet Earth. One 96 hour rotating Cube within a single rotation of Earth -- is an Ineffable Transcendence. Bible and Science falsify 1 corner day for the Cubic 4 corner Days rotating daily. A single god is not possible in our 4 Day Cubic Science, that equates Cubic Divinity. Everybody is both stupid and evil for ignoring the 4 days. Cube Divinity transcends all knowledge, Humans can't escape 4 corner Cubic Life. Fools worship mechanics of language - while they wallow in fictitious & deceitful word. Exact science based on Cubics, not on theories. Wisdom is Cubic testing of knowledge. Academia is progression of Ignorance. No god equals Simultaneous 4 Day Creation. Humans ignore their 4 corner stages of life metamorphosis. This site is a collection of data for a coming book - peruse it. No human has 2 hands as they are opposites, like plus and minus, that cancel as entity. Academia destroys your brain, your ability to think opposite. The eyes of the flounder fish were relocated, why were yours\n" +
+                        "\n" +
+                        "relocated? Your opposite eyes were moved to 1 corner to overlay for single perspective, but that corrupts your Opposite Brain.").queue();
+                event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
+                event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
+                event.getChannel().sendFiles(FileUpload.fromData(new File("image.PNG"),"image.png")).queue();
+            }
 
             if(msgSent.toLowerCase().equals("!docs")){
 
@@ -198,39 +236,40 @@ public class Listeners extends ListenerAdapter {
 
                 try {
                     gamblingaddict config = new gamblingaddict();
+                    if(config.getMap() == null){
+                        event.getChannel().sendMessage("hashmap is null").queue();
+                        return;
+                    }
+
+                    for(HashMap.Entry<String, HashMap<String, String>> entry : config.getMap().entrySet()) {
+                        String key = entry.getKey();
+                        if(key.equalsIgnoreCase(event.getAuthor().getId())){
+                            EmbedBuilder embed = new EmbedBuilder();
+                            embed.setTitle(name + " has already registered!");
+                            embed.setColor(Color.RED);
+                            embed.setDescription("do !stats to view your stats.");
+                            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                            return;
+                        }
+                    }
+
+
+
+                    config.createUser(event.getAuthor().getId());
+
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setTitle(name + " has successfully registered!");
+                    embed.setDescription("your registered id: ||" + event.getAuthor().getId() + "||");
+                    embed.addField(
+                            new MessageEmbed.Field("current cash", config.getMap().get(event.getAuthor().getId()).get("CurrentCash"), false));
+                    embed.setColor(Color.WHITE);
+                    embed.setFooter("sent at " + getFormattedTime() ); //"https://cdn.discordapp.com/attachments/975541046329114654/1074523115897495562/image_2.png"
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
 
-                if(yes.gamblingaddict.getMap() == null){
-                    event.getChannel().sendMessage("hashmap is null").queue();
-                    return;
-                }
 
-                for(HashMap.Entry<String, HashMap<String, String>> entry : yes.gamblingaddict.getMap().entrySet()) {
-                    String key = entry.getKey();
-                    if(key.equalsIgnoreCase(event.getAuthor().getId())){
-                        EmbedBuilder embed = new EmbedBuilder();
-                        embed.setTitle(name + " has already registered!");
-                        embed.setColor(Color.RED);
-                        embed.setDescription("do !stats to view your stats.");
-                        event.getChannel().sendMessageEmbeds(embed.build()).queue();
-                        return;
-                    }
-                }
-
-
-
-                yes.gamblingaddict.createUser(event.getAuthor().getId());
-
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setTitle(name + " has successfully registered!");
-                embed.setDescription("your registered id: ||" + event.getAuthor().getId() + "||");
-                embed.addField(
-                        new MessageEmbed.Field("current cash", yes.gamblingaddict.getMap().get(event.getAuthor().getId()).get("CurrentCash"), false));
-                embed.setColor(Color.WHITE);
-                embed.setFooter("sent at " + getFormattedTime() ); //"https://cdn.discordapp.com/attachments/975541046329114654/1074523115897495562/image_2.png"
-                event.getChannel().sendMessageEmbeds(embed.build()).queue();
 
             }
             

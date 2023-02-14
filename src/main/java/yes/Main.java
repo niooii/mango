@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
 
 
-        JDA bot = JDABuilder.createDefault("MTA3NDE2MDMzNzA0NzI1NzE3OA.GzMzpG.IrKL70VAV-stqJeRI6TKc4VhyELfiI32ZD50X8", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+        JDA bot = JDABuilder.createDefault("token here", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.playing("piano"))
                 .setStatus(OnlineStatus.IDLE)
                 .addEventListeners(new Listeners())
