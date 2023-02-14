@@ -26,6 +26,7 @@ public class Main {
             server.upsertCommand("fart", "farts really hard").queue();
         }
         //yes
+        //testt2
 
 
         //TextChannel general = event.getGuild().getTextChannelById(946147235375251501L);
