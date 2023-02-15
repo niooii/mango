@@ -17,6 +17,7 @@ import com.google.api.services.classroom.model.CourseWork;
 import com.google.api.services.classroom.model.ListCourseWorkResponse;
 import com.google.api.services.classroom.model.ListCoursesResponse;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -41,6 +42,17 @@ import org.json.simple.JSONArray;
 
 
 public class Listeners extends ListenerAdapter {
+
+    public Listeners() throws IOException {
+    }
+
+    public int random(int limit){
+        return (int) (Math.random() * limit + 1);
+    }
+
+    public EmbedBuilder createEmbed(){
+        return new EmbedBuilder();
+    }
 
 
     public static String getDate(){
@@ -179,10 +191,91 @@ public class Listeners extends ListenerAdapter {
     boolean stopwatchallowed = true;
     boolean breakk = false;
 
+    gamblingaddict config = new gamblingaddict();
+
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) { // wtf
         //String msgId = "";
         if(!event.getAuthor().isBot()){
+            if(event.getMessage().getContentRaw().equalsIgnoreCase("!register")){
+
+                for(HashMap.Entry<String, HashMap<String, String>> entry : config.getMap().entrySet()) {
+                    String key = entry.getKey();
+                    if(key.equalsIgnoreCase(event.getAuthor().getId())){
+                        EmbedBuilder embed = createEmbed();
+                        embed.setFooter("sent at " + getFormattedTime() );
+                        embed.setTitle("User " + event.getAuthor().getName() + " has already registered!");
+                        embed.setColor(Color.RED);
+                        embed.setDescription("do !stats to view your stats.");
+                        event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                        return;
+                    }
+                }
+
+
+
+
+
+                config.createUser(event.getAuthor().getId());
+
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setTitle(event.getAuthor().getName() + " has been registered.");
+                embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                embed.setDescription("your registered id: ||" + event.getAuthor().getId() + "||");
+                embed.addField(
+                        new MessageEmbed.Field("Starting cash:", config.getMap().get(event.getAuthor().getId()).get("CurrentCash"), false));
+                embed.setColor(Color.WHITE);
+                embed.setFooter("sent at " + getFormattedTime() ); //"https://cdn.discordapp.com/attachments/975541046329114654/1074523115897495562/image_2.png"
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+            }
+
+            if(!config.getMap().containsKey(event.getAuthor().getId())){
+                return;
+            }
+
+            // update messagecount
+
+            config.addMsgCount(event.getAuthor().getId());
+
+            // RNG COIN DROPS
+            EmbedBuilder embed2 = new EmbedBuilder();
+            embed2.setColor(Color.ORANGE);
+            embed2.setTitle("Random coin drop!");
+            embed2.setThumbnail("https://cdn.discordapp.com/attachments/975541046329114654/1075236938363179018/Empty-Gold-Coin-Transparent.png");
+
+                int random = random(200);
+            if(random == 1){
+                config.changecoins(event.getAuthor().getId(), 80);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 80 + "** coins!");
+                event.getChannel().sendMessageEmbeds(embed2.build()).queue();
+            }
+            if(random == 2 || random == 3){
+                config.changecoins(event.getAuthor().getId(), 60);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 60 + "** coins!");
+                event.getChannel().sendMessageEmbeds(embed2.build()).queue();
+            }
+            if(random == 5 || random == 6 || random == 7){
+                config.changecoins(event.getAuthor().getId(), 40);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 40 + "** coins!");
+                event.getChannel().sendMessageEmbeds(embed2.build()).queue();
+            }
+
+            // RNG DROPS END
+
+
+
+            if(event.getMessage().getContentRaw().equalsIgnoreCase("!stats")){
+                EmbedBuilder yes = createEmbed();
+                yes.setTitle(event.getAuthor().getName() + "'s statistics");
+                yes.setDescription("Coin balance: **" + config.getMap().get(event.getAuthor().getId()).get("CurrentCash") + "**.");
+                yes.setColor(Color.WHITE);
+                yes.addField(new MessageEmbed.Field("Date registered:", config.getMap().get(event.getAuthor().getId()).get("CreationDate") + ".", false));
+                yes.addField(new MessageEmbed.Field("Messages sent:", config.getMap().get(event.getAuthor().getId()).get("MessageCount") + ".", false));
+                yes.setThumbnail(event.getAuthor().getAvatarUrl());
+                yes.setFooter("sent at " + getFormattedTime() + " || statistics are specific to this bot. || niooi#2923");
+                event.getChannel().sendMessageEmbeds(yes.build()).queue();
+            }
+
             if(event.getChannel().getId().equals("1074562861407416410")){ //no life server
                 return;
             }
@@ -191,12 +284,38 @@ public class Listeners extends ListenerAdapter {
                 return;
             }
 
-
             String msgSent = event.getMessage().getContentRaw();
             int sindex1 = msgSent.indexOf(" ");
             int sindex2 = msgSent.indexOf(" ", msgSent.indexOf(" ") + 1);
+            int sindexlast = msgSent.lastIndexOf(" ");
             String mention = event.getAuthor().getAsMention();
             String name = event.getAuthor().getName();
+            String authorcoins = "";
+
+
+            if(config.getMap().keySet().contains(event.getAuthor().getId())){
+                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+            }
+
+            if(event.getAuthor().getId().equals("381851699763216386")){ // my id for admin commands
+
+
+
+            }
+
+
+
+
+            if(msgSent.equals("!wipe")){
+                EmbedBuilder embed = createEmbed();
+                embed.setFooter("sent at " + getFormattedTime() );
+                embed.setColor(SystemColor.RED);
+                embed.setTitle("**⚠ You are about to clear progression data. ⚠**");
+                embed.setDescription("Are you sure you want to continue?");
+                Button wipe = Button.danger("wipe","Proceed.");
+                event.getChannel().sendMessageEmbeds(embed.build()).addActionRow(wipe).queue();
+                return;
+            }
 
             if(msgSent.equalsIgnoreCase("bye")){
                 event.getChannel().sendMessage("Until you can tear and burn the bible to escape the EVIL ONE, it will be impossible for your educated stupid brain to know that 4 different corner harmonic 24 hour Days rotate simultaneously within a single 4 quadrant rotation of a squared equator and cubed Earth. The Solar system, the Universe, the Earth and all humans are composed of + 0 - antipodes, and equal to nothing if added as a ONE or Entity. All Creation occurs between Opposites. Academic ONEism destroys +0- brain. If you would acknowledge simple existing math proof that 4 harmonic corner days rotate simultaneously around squared equator and cubed Earth, proving 4 Days, Not 1Day,1Self,1Earth or 1God that exists only as anti-side. This page you see - cannot exist without its anti-side existence, as +0- antipodes. Add +0- as One = nothing.").queue();
@@ -231,47 +350,95 @@ public class Listeners extends ListenerAdapter {
             }
 
 
-
-            if(msgSent.equalsIgnoreCase("!register")){
-
-                try {
-                    gamblingaddict config = new gamblingaddict();
-                    if(config.getMap() == null){
-                        event.getChannel().sendMessage("hashmap is null").queue();
-                        return;
-                    }
-
-                    for(HashMap.Entry<String, HashMap<String, String>> entry : config.getMap().entrySet()) {
-                        String key = entry.getKey();
-                        if(key.equalsIgnoreCase(event.getAuthor().getId())){
-                            EmbedBuilder embed = new EmbedBuilder();
-                            embed.setTitle(name + " has already registered!");
-                            embed.setColor(Color.RED);
-                            embed.setDescription("do !stats to view your stats.");
-                            event.getChannel().sendMessageEmbeds(embed.build()).queue();
-                            return;
-                        }
-                    }
-
-
-
-                    config.createUser(event.getAuthor().getId());
-
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.setTitle(name + " has successfully registered!");
-                    embed.setDescription("your registered id: ||" + event.getAuthor().getId() + "||");
-                    embed.addField(
-                            new MessageEmbed.Field("current cash", config.getMap().get(event.getAuthor().getId()).get("CurrentCash"), false));
-                    embed.setColor(Color.WHITE);
-                    embed.setFooter("sent at " + getFormattedTime() ); //"https://cdn.discordapp.com/attachments/975541046329114654/1074523115897495562/image_2.png"
-                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-
+            if(msgSent.equals("test")){
 
             }
+
+            if(msgSent.equals("!roll")){
+                if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
+                    EmbedBuilder embed = createEmbed();
+                    embed.setFooter("sent at " + getFormattedTime() );
+                    embed.setColor(Color.black);
+                    embed.setTitle("Failed.");
+                    embed.setDescription("You cannot roll with a balance of 0!");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                HashMap<String, String> yes;
+                yes = config.roll(event.getAuthor().getId());
+                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                Optional<String> firstKey = yes.keySet().stream().findFirst();
+                if (firstKey.isPresent()) {
+                    String key = firstKey.get();
+                    EmbedBuilder embed = createEmbed();
+                    embed.setFooter("sent at " + getFormattedTime() );
+                    if(key.equals("nill")){
+                        embed.setTitle("You've gone broke (yoy're broke)");
+                        embed.setDescription("Your coins: **" + authorcoins + "**. *(" + yes.get(key) + ")*");
+                        embed.setColor(Color.gray);
+                        embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                        event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                        return;
+                    }
+                    embed.setTitle("You've rolled a " + key + "!");
+                    embed.setDescription("Your coins: **" + authorcoins + "**. *(" + yes.get(key) + ")*");
+                    if(Integer.parseInt(key) <= 3)
+                        embed.setColor(Color.RED);
+                    else{
+                        embed.setColor(Color.GREEN);
+                    }
+                    embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                }else{
+                    event.getChannel().sendMessage("error rolling......").queue();
+                }
+                return;
+
+            }
+
+            if(msgSent.startsWith("!give ")){
+                EmbedBuilder embed = createEmbed();
+                if(sindex1 == -1 || sindex2 == -1){
+                    embed.setColor(Color.RED);
+                    embed.setTitle("Incorrect usage.");
+                    embed.setDescription("!give @user numberofcoins");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                String recpid = msgSent.substring(msgSent.indexOf("@") + 1, msgSent.indexOf(">"));
+                String authorid = event.getAuthor().getId();
+                int change = Integer.parseInt(msgSent.substring(sindexlast + 1));
+                embed.setFooter("sent at " + getFormattedTime() );
+                if(config.getMap().get(recpid) == null){
+                    embed.setColor(Color.RED);
+                    embed.setTitle("Could not give coins.");
+                    embed.setDescription("Recipient doesn't exist/hasn't registered yet.");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                if(Integer.parseInt(config.getMap().get(authorid).get("CurrentCash")) - change < 0 || change < 0){
+                    embed.setColor(Color.RED);
+                    embed.setTitle("You don't have this many coins!");
+                    embed.setDescription("Your current balance: **" + authorcoins + "**.");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                config.changecoins(recpid, change);
+                config.changecoins(authorid, -change);
+                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                embed.setColor(Color.CYAN);
+                Member member = event.getGuild().retrieveMemberById(recpid).complete();
+                embed.setTitle("Gave " + change + " coins to " + member.getEffectiveName() + "!");
+                embed.setDescription("Your new balance: **" + authorcoins + "**.\n\nRecipient's balance: **" + config.getMap().get(recpid).get("CurrentCash") + "**.");
+                embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                return;
+            }
+
+
+
+
+
             
             if(msgSent.toLowerCase().startsWith("echo")){
                 String chnlid = event.getChannel().getId();
@@ -608,7 +775,7 @@ public class Listeners extends ListenerAdapter {
 
 
             if(msgSent.startsWith("openai")){
-                //event.getChannel().sendMessage("openai response here").queue();
+                event.getMessage().reply("openai is thinking....").queue();
 
                 //event.getChannel().sendMessage(prompt).queue();
                 if(msgSent.indexOf(" ") == -1){
@@ -639,7 +806,7 @@ public class Listeners extends ListenerAdapter {
                 String maxTokensString = "" + maxTokens;
 
                 httpConn.setRequestProperty("Content-Type", "application/json");
-                httpConn.setRequestProperty("Authorization", "Bearer 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");
+                httpConn.setRequestProperty("Authorization", "Bearer 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");
 
                 httpConn.setDoOutput(true);
                 OutputStreamWriter writer = null;
@@ -759,11 +926,6 @@ public class Listeners extends ListenerAdapter {
                 }
             }
 
-            if(msgSent.equalsIgnoreCase("wipe")){
-                String cid = event.getChannel().getId();
-
-            }
-
 
 
         }
@@ -786,6 +948,17 @@ public class Listeners extends ListenerAdapter {
 
             breakk = true;
 
+        }
+
+        if(event.getButton().getId().equals("wipe")){
+            System.out.println("got here...");
+            try {
+                config.clear();
+                event.reply("data cleared!").queue();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return;
         }
 
     }
