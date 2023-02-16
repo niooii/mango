@@ -6,13 +6,15 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.io.IOException;
+
 public class Main {
 
 
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
 
         JDA bot = JDABuilder.createDefault("token here", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
