@@ -43,6 +43,8 @@ import org.json.simple.JSONArray;
 
 public class Listeners extends ListenerAdapter {
 
+    public String openaikey = "bearer token here";
+
     public Listeners() throws IOException {
     }
 
@@ -393,6 +395,53 @@ public class Listeners extends ListenerAdapter {
                     event.getChannel().sendMessage("error rolling......").queue();
                 }
                 return;
+
+            }
+
+            if(msgSent.equals("!roll10")){
+                EmbedBuilder embed = createEmbed();
+                int totalchange = 0;
+                if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
+                    embed.setFooter("sent at " + getFormattedTime() );
+                    embed.setColor(Color.black);
+                    embed.setTitle("Failed.");
+                    embed.setDescription("You cannot roll with a balance of 0!");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                for(int i = 0; i < 10; i++){
+                    HashMap<String, String> yes;
+                    yes = config.roll(event.getAuthor().getId());
+                    authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                    Optional<String> firstKey = yes.keySet().stream().findFirst();
+                    if (firstKey.isPresent()) {
+                        String key = firstKey.get();
+                        totalchange += Integer.parseInt(yes.get(key));
+                        if(key.equals("nill")){
+                            embed.setTitle("You've gone broke (yoy're broke)");
+                            embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
+                            embed.setColor(Color.gray);
+                            embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                            return;
+                        }
+
+                    }
+
+
+
+                }
+                if(totalchange < 0){
+                    embed.setColor(Color.RED);
+
+                }else{
+                    embed.setColor(Color.GREEN);
+                }
+
+                embed.setTitle("Rolled 10 times!");
+                embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
+                embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
 
             }
 
@@ -806,7 +855,7 @@ public class Listeners extends ListenerAdapter {
                 String maxTokensString = "" + maxTokens;
 
                 httpConn.setRequestProperty("Content-Type", "application/json");
-                httpConn.setRequestProperty("Authorization", "Bearer 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");
+                httpConn.setRequestProperty("Authorization", openaikey);
 
                 httpConn.setDoOutput(true);
                 OutputStreamWriter writer = null;
