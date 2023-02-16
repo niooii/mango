@@ -16,6 +16,7 @@ import com.google.api.services.classroom.model.Course;
 import com.google.api.services.classroom.model.CourseWork;
 import com.google.api.services.classroom.model.ListCourseWorkResponse;
 import com.google.api.services.classroom.model.ListCoursesResponse;
+import com.google.gson.internal.bind.util.ISO8601Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -43,7 +44,7 @@ import org.json.simple.JSONArray;
 
 public class Listeners extends ListenerAdapter {
 
-    public String openaikey = "bearer token here";
+    public String openaikey = "Bearer token here";
 
     public Listeners() throws IOException {
     }
@@ -246,19 +247,25 @@ public class Listeners extends ListenerAdapter {
             embed2.setThumbnail("https://cdn.discordapp.com/attachments/975541046329114654/1075236938363179018/Empty-Gold-Coin-Transparent.png");
 
                 int random = random(200);
+            int random2 = random(714);
+            if(random2 == 1){
+                config.changecoins(event.getAuthor().getId(), 4400);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 4400 + "** coins! *(1/714)*");
+                event.getChannel().sendMessageEmbeds(embed2.build()).queue();
+            }
             if(random == 1){
-                config.changecoins(event.getAuthor().getId(), 80);
-                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 80 + "** coins!");
+                config.changecoins(event.getAuthor().getId(), 320);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 320 + "** coins! *(1/200)*");
                 event.getChannel().sendMessageEmbeds(embed2.build()).queue();
             }
             if(random == 2 || random == 3){
-                config.changecoins(event.getAuthor().getId(), 60);
-                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 60 + "** coins!");
+                config.changecoins(event.getAuthor().getId(), 160);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 160 + "** coins! *(1/100)*");
                 event.getChannel().sendMessageEmbeds(embed2.build()).queue();
             }
             if(random == 5 || random == 6 || random == 7){
-                config.changecoins(event.getAuthor().getId(), 40);
-                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 40 + "** coins!");
+                config.changecoins(event.getAuthor().getId(), 80);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 80 + "** coins! *(1/66)*");
                 event.getChannel().sendMessageEmbeds(embed2.build()).queue();
             }
 
@@ -398,7 +405,7 @@ public class Listeners extends ListenerAdapter {
 
             }
 
-            if(msgSent.equals("!roll10")){
+            if(msgSent.startsWith("!roll ")){
                 EmbedBuilder embed = createEmbed();
                 int totalchange = 0;
                 if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
@@ -409,7 +416,8 @@ public class Listeners extends ListenerAdapter {
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     return;
                 }
-                for(int i = 0; i < 10; i++){
+                int times = Integer.parseInt(msgSent.substring(sindex1 + 1));
+                for(int i = 0; i < times; i++){
                     HashMap<String, String> yes;
                     yes = config.roll(event.getAuthor().getId());
                     authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
@@ -417,6 +425,7 @@ public class Listeners extends ListenerAdapter {
                     if (firstKey.isPresent()) {
                         String key = firstKey.get();
                         totalchange += Integer.parseInt(yes.get(key));
+                        System.out.println("TOTALCHANGE: "+ totalchange);
                         if(key.equals("nill")){
                             embed.setTitle("You've gone broke (yoy're broke)");
                             embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
@@ -438,8 +447,66 @@ public class Listeners extends ListenerAdapter {
                     embed.setColor(Color.GREEN);
                 }
 
-                embed.setTitle("Rolled 10 times!");
-                embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
+                embed.setTitle("Rolled " + times + " times!");
+                String plusorno = "";
+                if(totalchange >= 0) plusorno = "+";
+                embed.setDescription("Your coins: **" + authorcoins + "**. *(" + plusorno + totalchange + ")*");
+                embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+
+            }
+
+            if(msgSent.startsWith("!gamble ")){
+                EmbedBuilder embed = createEmbed();
+                int totalchange = 0;
+                if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
+                    embed.setFooter("sent at " + getFormattedTime() );
+                    embed.setColor(Color.black);
+                    embed.setTitle("Failed.");
+                    embed.setDescription("You cannot roll with a balance of 0!");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                int times = Integer.parseInt(msgSent.substring(sindex1 + 1));
+                for(int i = 0; i < times; i++){
+                    int yes;
+                    yes = config.badroll(event.getAuthor().getId());
+
+                        totalchange += yes;
+                    authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                        System.out.println("TOTALCHANGE: "+ totalchange);
+                        if(Integer.parseInt(authorcoins) <= 0){
+                            embed.setTitle("You've gone broke (yoy're broke)");
+                            embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
+                            embed.setColor(Color.gray);
+                            embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                            event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                            return;
+                        }
+
+
+
+
+                }
+                String plusorno = "";
+                if(random(3) == 2){
+                    plusorno = "+";
+                } else{
+                    totalchange = -1 * totalchange;
+                }
+                if(totalchange < 0){
+                    embed.setColor(Color.RED);
+
+                }else{
+                    embed.setColor(Color.GREEN);
+                }
+                config.changecoins(event.getAuthor().getId(), totalchange);
+                System.out.println("coins changed!" + config.getMap().get(event.getAuthor().getId()).get("CurrentCash"));
+
+                embed.setTitle("Gambled " + times + " times!");
+                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                if(totalchange >= 0) plusorno = "+";
+                embed.setDescription("Your coins: **" + authorcoins + "**. *(" + plusorno + totalchange + ")*");
                 embed.setThumbnail(event.getAuthor().getAvatarUrl());
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
 

@@ -49,13 +49,23 @@ public class gamblingaddict {
         HashMap<String, String> hm = new HashMap<>();
         System.out.println(user);
         if(random(200) == 33){
-            changecoins(user, 8000);
-            hm.put("33", "+4000");
+            changecoins(user, 4000);
+            hm.put("very rare number", "+4000");
             return hm;
         }
-        if(random(50) == 33){
-            changecoins(user, 2000);
-            hm.put("33", "+800");
+        if(random(50) == 22){
+            changecoins(user, 800);
+            hm.put("decently rare number", "+800");
+            return hm;
+        }
+        if(random(200) == 11){
+            changecoins(user, -4000);
+            hm.put("very bad number", "-4000");
+            return hm;
+        }
+        if(random(50) == 22){
+            changecoins(user, -800);
+            hm.put("bad number", "-800");
             return hm;
         }
         switch (random(6)) {
@@ -87,23 +97,71 @@ public class gamblingaddict {
                 }
             }
             case 4 -> {
-                changecoins(user, 20);
-                hm.put("4", "+20");
+                changecoins(user, 35);
+                hm.put("4", "+35");
                 return hm;
             }
             case 5 -> {
-                changecoins(user, 60);
-                hm.put("5", "+60");
+                changecoins(user, 90);
+                hm.put("5", "+90");
                 return hm;
             }
             case 6 -> {
-                changecoins(user, 120);
-                hm.put("6", "+120");
+                changecoins(user, 175);
+                hm.put("6", "+175");
                 return hm;
             }
         }
         hm.put("bruh", "???????");
         return hm;
+    }
+
+    public int badroll(String user){
+        System.out.println(user);
+        if(random(200) == 33){
+            changecoins(user, 4000);
+            return 4000;
+        }
+        if(random(50) == 22){
+            changecoins(user, 800);
+            return 800;
+        }
+        switch (random(6)) {
+            case 1 -> {
+                if(changecoins(user, 175)){
+                    return 175;
+                } else{
+                    map.get(user).replace("CurrentCash", "0");
+                }
+            }
+            case 2 -> {
+                if(changecoins(user, 90)){
+                    return 90;
+                } else{
+                    map.get(user).replace("CurrentCash", "0");
+                }
+            }
+            case 3 -> {
+                if(changecoins(user, 35)){
+                    return 35;
+                } else{
+                    map.get(user).replace("CurrentCash", "0");
+                }
+            }
+            case 4 -> {
+                changecoins(user, 35);
+                return 35;
+            }
+            case 5 -> {
+                changecoins(user, 90);
+                return 90;
+            }
+            case 6 -> {
+                changecoins(user, 175);
+                return 175;
+            }
+        }
+        return 0;
     }
     static ConcurrentHashMap<String,HashMap<String, String>> map;
 
