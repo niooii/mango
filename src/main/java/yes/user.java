@@ -31,7 +31,7 @@ return creationdate;
 } 
 
 public int getMsgCount(){
-return msg;
+return msgcount;
 } 
 
 //end of accessor methods
