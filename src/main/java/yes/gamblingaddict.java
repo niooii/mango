@@ -49,12 +49,12 @@ public class gamblingaddict {
         HashMap<String, String> hm = new HashMap<>();
         System.out.println(user);
         if(random(200) == 33){
-            changecoins(user, 8000);
+            changecoins(user, 4000);
             hm.put("33", "+4000");
             return hm;
         }
         if(random(50) == 33){
-            changecoins(user, 2000);
+            changecoins(user, 800);
             hm.put("33", "+800");
             return hm;
         }

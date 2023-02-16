@@ -43,7 +43,7 @@ import org.json.simple.JSONArray;
 
 public class Listeners extends ListenerAdapter {
 
-    public String openaikey = "bearer token here";
+    public String openaikey = "Bearer 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";
 
     public Listeners() throws IOException {
     }
@@ -398,7 +398,7 @@ public class Listeners extends ListenerAdapter {
 
             }
 
-            if(msgSent.equals("!roll10")){
+            if(msgSent.startsWith("!roll ")){
                 EmbedBuilder embed = createEmbed();
                 int totalchange = 0;
                 if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
@@ -409,7 +409,8 @@ public class Listeners extends ListenerAdapter {
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     return;
                 }
-                for(int i = 0; i < 10; i++){
+                int times = Integer.parseInt(msgSent.substring(sindex1 + 1));
+                for(int i = 0; i < times; i++){
                     HashMap<String, String> yes;
                     yes = config.roll(event.getAuthor().getId());
                     authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
@@ -417,6 +418,7 @@ public class Listeners extends ListenerAdapter {
                     if (firstKey.isPresent()) {
                         String key = firstKey.get();
                         totalchange += Integer.parseInt(yes.get(key));
+                        System.out.println("TOTALCHANGE: "+ totalchange);
                         if(key.equals("nill")){
                             embed.setTitle("You've gone broke (yoy're broke)");
                             embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
@@ -438,8 +440,10 @@ public class Listeners extends ListenerAdapter {
                     embed.setColor(Color.GREEN);
                 }
 
-                embed.setTitle("Rolled 10 times!");
-                embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
+                embed.setTitle("Rolled " + times + " times!");
+                String plusorno = "";
+                if(totalchange >= 0) plusorno = "+";
+                embed.setDescription("Your coins: **" + authorcoins + "**. *(" + plusorno + totalchange + ")*");
                 embed.setThumbnail(event.getAuthor().getAvatarUrl());
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
 

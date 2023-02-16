@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
-        JDA bot = JDABuilder.createDefault("token here", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+        JDA bot = JDABuilder.createDefault("MTA3NDE2MDMzNzA0NzI1NzE3OA.Gzpuih.WvTxluiFDRwMiSirdAXV6clWDCdb4xaro4dveU", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
                 .setActivity(Activity.playing("piano"))
                 .setStatus(OnlineStatus.IDLE)
                 .addEventListeners(new Listeners())
