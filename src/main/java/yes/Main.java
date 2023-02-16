@@ -6,16 +6,34 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.io.IOException;
+
 public class Main {
+    /*
+
+    public static String obfuscate(String token){
+        String temp = "";
+        for(int i = token.length() - 1; i>=0; i--){
+            temp+=token.charAt(i);
+        }
+    }
+
+     */
 
 
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
 
-        JDA bot = JDABuilder.createDefault("token here", GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+        JDA bot = JDABuilder.createDefault("MTA3NDE2MDMzNzA0NzI1NzE3OA.GzMzpG.IrKL70VAV-stqJeRI6TKc4VhyELfiI32ZD50X8", GatewayIntent.GUILD_MESSAGES,
+                        GatewayIntent.MESSAGE_CONTENT,
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.GUILD_VOICE_STATES,
+                        GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+                        GatewayIntent.SCHEDULED_EVENTS
+                        )
                 .setActivity(Activity.playing("piano"))
                 .setStatus(OnlineStatus.IDLE)
                 .addEventListeners(new Listeners())
