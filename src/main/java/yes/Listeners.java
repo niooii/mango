@@ -44,7 +44,7 @@ import org.json.simple.JSONArray;
 
 public class Listeners extends ListenerAdapter {
 
-    public String openaikey = "Bearer token here";
+    public String openaikey = "Bearer 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";
 
     public Listeners() throws IOException {
     }
@@ -196,13 +196,22 @@ public class Listeners extends ListenerAdapter {
 
     gamblingaddict config = new gamblingaddict();
 
+    public EmbedBuilder sendInvalidUsageEmbed(String usage){
+        EmbedBuilder embed = createEmbed();
+        embed.setColor(Color.RED);
+        embed.setTitle("Incorrect usage.");
+        embed.setDescription(usage);
+        return embed;
+    }
+
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) { // wtf
         //String msgId = "";
         if(!event.getAuthor().isBot()){
+            if(event.getChannel().getId() == "1075946322164731924") return;
             if(event.getMessage().getContentRaw().equalsIgnoreCase("!register")){
 
-                for(HashMap.Entry<String, HashMap<String, String>> entry : config.getMap().entrySet()) {
+                for(HashMap.Entry<String, user> entry : config.getMap().entrySet()) {
                     String key = entry.getKey();
                     if(key.equalsIgnoreCase(event.getAuthor().getId())){
                         EmbedBuilder embed = createEmbed();
@@ -215,18 +224,16 @@ public class Listeners extends ListenerAdapter {
                     }
                 }
 
+                //Member member = event.getGuild().retrieveMemberById(recpid).complete();
 
-
-
-
-                config.createUser(event.getAuthor().getId());
+                config.createUser(event.getAuthor().getId(), event.getAuthor().getName());
 
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.setTitle(event.getAuthor().getName() + " has been registered.");
                 embed.setThumbnail(event.getAuthor().getAvatarUrl());
                 embed.setDescription("your registered id: ||" + event.getAuthor().getId() + "||");
                 embed.addField(
-                        new MessageEmbed.Field("Starting cash:", config.getMap().get(event.getAuthor().getId()).get("CurrentCash"), false));
+                        new MessageEmbed.Field("Starting balance:", "" + config.getMap().get(event.getAuthor().getId()).getMoney(), false));
                 embed.setColor(Color.WHITE);
                 embed.setFooter("sent at " + getFormattedTime() ); //"https://cdn.discordapp.com/attachments/975541046329114654/1074523115897495562/image_2.png"
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
@@ -246,26 +253,28 @@ public class Listeners extends ListenerAdapter {
             embed2.setTitle("Random coin drop!");
             embed2.setThumbnail("https://cdn.discordapp.com/attachments/975541046329114654/1075236938363179018/Empty-Gold-Coin-Transparent.png");
 
-                int random = random(200);
+            int random = random(200);
             int random2 = random(714);
+            double randomyes = random(100)/100.0;
+            String displaydouble = ("" + randomyes).substring(1);
             if(random2 == 1){
-                config.changecoins(event.getAuthor().getId(), 4400);
-                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 4400 + "** coins! *(1/714)*");
+                config.changecoins(event.getAuthor().getId(), 4400 + randomyes);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 4400 + displaydouble + "** coins! *(1/714)*");
                 event.getChannel().sendMessageEmbeds(embed2.build()).queue();
             }
             if(random == 1){
-                config.changecoins(event.getAuthor().getId(), 320);
-                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 320 + "** coins! *(1/200)*");
+                config.changecoins(event.getAuthor().getId(), 320 + randomyes);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 320 + displaydouble + "** coins! *(1/200)*");
                 event.getChannel().sendMessageEmbeds(embed2.build()).queue();
             }
             if(random == 2 || random == 3){
-                config.changecoins(event.getAuthor().getId(), 160);
-                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 160 + "** coins! *(1/100)*");
+                config.changecoins(event.getAuthor().getId(), 160 + randomyes);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 160 + displaydouble + "** coins! *(1/100)*");
                 event.getChannel().sendMessageEmbeds(embed2.build()).queue();
             }
             if(random == 5 || random == 6 || random == 7){
-                config.changecoins(event.getAuthor().getId(), 80);
-                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 80 + "** coins! *(1/66)*");
+                config.changecoins(event.getAuthor().getId(), 80 + randomyes);
+                embed2.setDescription("**" + event.getAuthor().getName() + "** has found **" + 80 + displaydouble + "** coins! *(1/66)*");
                 event.getChannel().sendMessageEmbeds(embed2.build()).queue();
             }
 
@@ -276,12 +285,37 @@ public class Listeners extends ListenerAdapter {
             if(event.getMessage().getContentRaw().equalsIgnoreCase("!stats")){
                 EmbedBuilder yes = createEmbed();
                 yes.setTitle(event.getAuthor().getName() + "'s statistics");
-                yes.setDescription("Coin balance: **" + config.getMap().get(event.getAuthor().getId()).get("CurrentCash") + "**.");
+                yes.setDescription("Coin balance: **" + config.getMap().get(event.getAuthor().getId()).getMoney() + "**.");
                 yes.setColor(Color.WHITE);
-                yes.addField(new MessageEmbed.Field("Date registered:", config.getMap().get(event.getAuthor().getId()).get("CreationDate") + ".", false));
-                yes.addField(new MessageEmbed.Field("Messages sent:", config.getMap().get(event.getAuthor().getId()).get("MessageCount") + ".", false));
+                yes.addField(new MessageEmbed.Field("Date registered:", config.getMap().get(event.getAuthor().getId()).getCreationDate(), false));
+                yes.addField(new MessageEmbed.Field("Messages sent:", config.getMap().get(event.getAuthor().getId()).getMsgCount() + ".", false));
                 yes.setThumbnail(event.getAuthor().getAvatarUrl());
-                yes.setFooter("sent at " + getFormattedTime() + " || statistics are specific to this bot. || niooi#2923");
+                yes.setFooter("statistics are specific to this bot. || niooi#2923");
+                event.getChannel().sendMessageEmbeds(yes.build()).queue();
+            }
+
+            if(event.getMessage().getContentRaw().startsWith("!stats ")){
+                if(!event.getMessage().getContentRaw().contains("@") || !event.getMessage().getContentRaw().contains(">")){
+                    event.getChannel().sendMessageEmbeds(sendInvalidUsageEmbed("!stats @user").build()).queue();
+                    return;
+                }
+                String recpid = event.getMessage().getContentRaw().substring(event.getMessage().getContentRaw().indexOf("@") + 1, event.getMessage().getContentRaw().indexOf(">"));
+                EmbedBuilder yes = createEmbed();
+                if(config.getMap().get(recpid) == null){
+                    yes.setColor(Color.RED);
+                    yes.setTitle("Could not retrieve user's stats.");
+                    yes.setDescription("Recipient doesn't exist/hasn't registered yet.");
+                    event.getChannel().sendMessageEmbeds(yes.build()).queue();
+                    return;
+                }
+                Member member = event.getGuild().retrieveMemberById(recpid).complete();
+                yes.setTitle(member.getEffectiveName() + "'s statistics");
+                yes.setDescription("Coin balance: **" + config.getMap().get(recpid).getMoney() + "**.");
+                yes.setColor(Color.WHITE);
+                yes.addField(new MessageEmbed.Field("Date registered:", config.getMap().get(recpid).getCreationDate(), false));
+                yes.addField(new MessageEmbed.Field("Messages sent:", config.getMap().get(recpid).getMsgCount() + ".", false));
+                yes.setThumbnail(member.getAvatarUrl());
+                yes.setFooter("statistics are specific to this bot. || niooi#2923");
                 event.getChannel().sendMessageEmbeds(yes.build()).queue();
             }
 
@@ -299,11 +333,11 @@ public class Listeners extends ListenerAdapter {
             int sindexlast = msgSent.lastIndexOf(" ");
             String mention = event.getAuthor().getAsMention();
             String name = event.getAuthor().getName();
-            String authorcoins = "";
+            double authorcoins = 0.0;
 
 
             if(config.getMap().keySet().contains(event.getAuthor().getId())){
-                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
             }
 
             if(event.getAuthor().getId().equals("381851699763216386")){ // my id for admin commands
@@ -364,7 +398,7 @@ public class Listeners extends ListenerAdapter {
             }
 
             if(msgSent.equals("!roll")){
-                if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
+                if(config.getMap().get(event.getAuthor().getId()).getMoney() == 0){
                     EmbedBuilder embed = createEmbed();
                     embed.setFooter("sent at " + getFormattedTime() );
                     embed.setColor(Color.black);
@@ -375,7 +409,7 @@ public class Listeners extends ListenerAdapter {
                 }
                 HashMap<String, String> yes;
                 yes = config.roll(event.getAuthor().getId());
-                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
                 Optional<String> firstKey = yes.keySet().stream().findFirst();
                 if (firstKey.isPresent()) {
                     String key = firstKey.get();
@@ -408,7 +442,7 @@ public class Listeners extends ListenerAdapter {
             if(msgSent.startsWith("!roll ")){
                 EmbedBuilder embed = createEmbed();
                 int totalchange = 0;
-                if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
+                if(config.getMap().get(event.getAuthor().getId()).getMoney() == 0){
                     embed.setFooter("sent at " + getFormattedTime() );
                     embed.setColor(Color.black);
                     embed.setTitle("Failed.");
@@ -420,7 +454,7 @@ public class Listeners extends ListenerAdapter {
                 for(int i = 0; i < times; i++){
                     HashMap<String, String> yes;
                     yes = config.roll(event.getAuthor().getId());
-                    authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                    authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
                     Optional<String> firstKey = yes.keySet().stream().findFirst();
                     if (firstKey.isPresent()) {
                         String key = firstKey.get();
@@ -459,11 +493,11 @@ public class Listeners extends ListenerAdapter {
             if(msgSent.startsWith("!gamble ")){
                 EmbedBuilder embed = createEmbed();
                 int totalchange = 0;
-                if(config.getMap().get(event.getAuthor().getId()).get("CurrentCash").equals("0")){
+                if(config.getMap().get(event.getAuthor().getId()).getMoney() == 0){
                     embed.setFooter("sent at " + getFormattedTime() );
                     embed.setColor(Color.black);
                     embed.setTitle("Failed.");
-                    embed.setDescription("You cannot roll with a balance of 0!");
+                    embed.setDescription("You cannot gamble with a balance of 0!");
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     return;
                 }
@@ -471,25 +505,12 @@ public class Listeners extends ListenerAdapter {
                 for(int i = 0; i < times; i++){
                     int yes;
                     yes = config.badroll(event.getAuthor().getId());
-
-                        totalchange += yes;
-                    authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                    totalchange += yes;
+                    authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
                         System.out.println("TOTALCHANGE: "+ totalchange);
-                        if(Integer.parseInt(authorcoins) <= 0){
-                            embed.setTitle("You've gone broke (yoy're broke)");
-                            embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
-                            embed.setColor(Color.gray);
-                            embed.setThumbnail(event.getAuthor().getAvatarUrl());
-                            event.getChannel().sendMessageEmbeds(embed.build()).queue();
-                            return;
-                        }
-
-
-
-
                 }
                 String plusorno = "";
-                if(random(3) == 2){
+                if(random(100) > 50){
                     plusorno = "+";
                 } else{
                     totalchange = -1 * totalchange;
@@ -500,16 +521,112 @@ public class Listeners extends ListenerAdapter {
                 }else{
                     embed.setColor(Color.GREEN);
                 }
+                if(authorcoins + totalchange <= 0){
+                    embed.setTitle("You've gone broke (yoy're broke)");
+                    config.getMap().get(event.getAuthor().getId()).setMoney(0);
+                    authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
+                    embed.setDescription("Your coins: **" + authorcoins + "**. *(" + totalchange + ")*");
+                    embed.setColor(Color.gray);
+                    embed.setThumbnail(event.getAuthor().getAvatarUrl());
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
                 config.changecoins(event.getAuthor().getId(), totalchange);
-                System.out.println("coins changed!" + config.getMap().get(event.getAuthor().getId()).get("CurrentCash"));
+                System.out.println("coins changed!" + config.getMap().get(event.getAuthor().getId()).getMoney());
 
                 embed.setTitle("Gambled " + times + " times!");
-                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
                 if(totalchange >= 0) plusorno = "+";
                 embed.setDescription("Your coins: **" + authorcoins + "**. *(" + plusorno + totalchange + ")*");
                 embed.setThumbnail(event.getAuthor().getAvatarUrl());
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
 
+            }
+
+            if(msgSent.startsWith("!rob")){
+                EmbedBuilder embed = createEmbed();
+                if(sindex1 == -1){
+                    embed.setColor(Color.RED);
+                    embed.setTitle("Incorrect usage.");
+                    embed.setDescription("!bomb @user");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                String recpid = msgSent.substring(msgSent.indexOf("@") + 1, msgSent.indexOf(">"));
+                String authorid = event.getAuthor().getId();
+                if(config.getMap().get(recpid) == null){
+                    embed.setColor(Color.RED);
+                    embed.setTitle("Could not rob user.");
+                    embed.setDescription("Recipient doesn't exist/hasn't registered yet.");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                double changeauthor = ((int)(100 * -config.getMap().get(event.getAuthor().getId()).getMoney()/(random(3) + 1)))/100.0;
+                System.out.println(changeauthor);
+                String displaychangeauthor = ("" + -changeauthor);
+                displaychangeauthor = displaychangeauthor.substring(0, displaychangeauthor.indexOf(".") + 2);
+                double changerecip = ((int)(100 * -config.getMap().get(recpid).getMoney()/(random(3) + 1)))/100.0;
+                System.out.println(changerecip);
+                String displaychangerecip = ("" + -changerecip);
+                displaychangerecip = displaychangerecip.substring(0, displaychangerecip.indexOf(".") + 2);
+                int chance = (int)((config.getMap().get(event.getAuthor().getId()).getMoney()/config.getMap().get(recpid).getMoney()) * 100);
+                boolean highrisk = false;
+                if(chance > 100) highrisk = true;
+                if(chance > 50){
+                    chance = 50;
+                }
+                String successrate = "";
+                if(("" + chance/100.0).length() == 3){
+                    successrate = ("" + chance/100.0 + "0").substring(2);
+                } else {
+                    successrate = ("" + chance/100.0).substring(2);
+                }
+                if(successrate.charAt(0) == '0')
+                    successrate = successrate.substring(1);
+                embed.setFooter("Rate of success: " + successrate + "%");
+
+                Member member = event.getGuild().retrieveMemberById(recpid).complete();
+                if(!highrisk && random(100) < chance){
+                    config.changecoins(recpid, changerecip);
+                    config.changecoins(authorid, -changerecip);
+                    authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
+                    embed.setColor(Color.GREEN);
+                    embed.setTitle("Robbed " + displaychangerecip + " coins from " + member.getEffectiveName() + "!");
+                    embed.setDescription("Your new balance: **" + authorcoins + "**.\n\nVictim's balance: **" + config.getMap().get(recpid).getMoney() + "**.");
+                    embed.setThumbnail("https://cdn.discordapp.com/attachments/975541046329114654/1075974006240448672/aa996eed4a4f5c237f47ac3b9369fabd.png");
+                    event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                    return;
+                }
+                if(highrisk) {
+                    if (random(100) < chance) {
+                        config.changecoins(recpid, changerecip);
+                        config.changecoins(authorid, -changerecip);
+                        authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
+                        embed.setColor(Color.GREEN);
+                        embed.setTitle("Robbed " + displaychangerecip + " coins from " + member.getEffectiveName() + "!");
+                        embed.setDescription("Your new balance: **" + authorcoins + "**.\n\nVictim's balance: **" + config.getMap().get(recpid).getMoney() + "**.");
+                        embed.setThumbnail("https://cdn.discordapp.com/attachments/975541046329114654/1075974006240448672/aa996eed4a4f5c237f47ac3b9369fabd.png");
+                        event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                        return;
+                    } else {
+                        config.changecoins(authorid, changeauthor);
+                        config.changecoins(recpid, -changeauthor);
+                        authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
+                        embed.setColor(Color.RED);
+                        embed.setTitle("You were instead robbed " + displaychangeauthor + " coins by " + member.getEffectiveName() + "!");
+                        embed.setDescription("Your new balance: **" + authorcoins + "**.\n\nVictim's balance: **" + config.getMap().get(recpid).getMoney() + "**.");
+                        embed.setThumbnail("https://cdn.discordapp.com/attachments/975541046329114654/1075971138338959380/image.png");
+                        event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                        return;
+                    }
+                }
+
+                embed.setColor(Color.RED);
+                embed.setTitle("Failed to rob coins from " + member.getEffectiveName() + "... ");
+                embed.setDescription("**Balances remain unchanged**.");
+                embed.setThumbnail("https://cdn.discordapp.com/attachments/975541046329114654/1075974229553586176/d4a7ae925191062983533b1e171bebcd.png");
+                event.getChannel().sendMessageEmbeds(embed.build()).queue();
+                return;
             }
 
             if(msgSent.startsWith("!give ")){
@@ -532,7 +649,7 @@ public class Listeners extends ListenerAdapter {
                     event.getChannel().sendMessageEmbeds(embed.build()).queue();
                     return;
                 }
-                if(Integer.parseInt(config.getMap().get(authorid).get("CurrentCash")) - change < 0 || change < 0){
+                if(config.getMap().get(authorid).getMoney() - change < 0 || change < 0){
                     embed.setColor(Color.RED);
                     embed.setTitle("You don't have this many coins!");
                     embed.setDescription("Your current balance: **" + authorcoins + "**.");
@@ -541,11 +658,11 @@ public class Listeners extends ListenerAdapter {
                 }
                 config.changecoins(recpid, change);
                 config.changecoins(authorid, -change);
-                authorcoins = config.getMap().get(event.getAuthor().getId()).get("CurrentCash");
+                authorcoins = config.getMap().get(event.getAuthor().getId()).getMoney();
                 embed.setColor(Color.CYAN);
                 Member member = event.getGuild().retrieveMemberById(recpid).complete();
                 embed.setTitle("Gave " + change + " coins to " + member.getEffectiveName() + "!");
-                embed.setDescription("Your new balance: **" + authorcoins + "**.\n\nRecipient's balance: **" + config.getMap().get(recpid).get("CurrentCash") + "**.");
+                embed.setDescription("Your new balance: **" + authorcoins + "**.\n\nRecipient's balance: **" + config.getMap().get(recpid).getMoney() + "**.");
                 embed.setThumbnail(event.getAuthor().getAvatarUrl());
                 event.getChannel().sendMessageEmbeds(embed.build()).queue();
                 return;
