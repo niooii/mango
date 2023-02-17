@@ -17,6 +17,7 @@ public class Main {
             temp+=token.charAt(i);
         }
     }
+    or just dont push with token here smh
 
      */
 
@@ -27,7 +28,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
-        JDA bot = JDABuilder.createDefault("MTA3NDE2MDMzNzA0NzI1NzE3OA.GzMzpG.IrKL70VAV-stqJeRI6TKc4VhyELfiI32ZD50X8", GatewayIntent.GUILD_MESSAGES,
+        JDA bot = JDABuilder.createDefault("token here", GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.MESSAGE_CONTENT,
                         GatewayIntent.GUILD_MEMBERS,
                         GatewayIntent.GUILD_VOICE_STATES,
@@ -38,6 +39,7 @@ public class Main {
                 .setStatus(OnlineStatus.IDLE)
                 .addEventListeners(new Listeners())
                 .build();
+
 
 
 
