@@ -1,5 +1,7 @@
 package yes;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDAInfo;
 
 import java.awt.*;
 import java.io.*;
@@ -35,13 +37,13 @@ public class gamblingaddict {
         return (int) (Math.random() * limit + 1);
     }
 
-    public boolean changecoins(String user, int change){
-        if(Integer.parseInt(map.get(user).get("CurrentCash")) + change < 0){
+    public boolean changecoins(String user, double change){
+        if(map.get(user).getMoney() + change < 0){
             return false;
         }
-        map.get(user).replace("CurrentCash", "" + (Integer.parseInt(map.get(user).get("CurrentCash")) + change));
+        map.get(user).setMoney(map.get(user).getMoney() + change);
         writedata();
-        System.out.println("Current cash:" + map.get(user).get("CurrentCash"));
+        System.out.println("Current cash:" + map.get(user).getMoney());
         return true;
     }
 
@@ -74,7 +76,7 @@ public class gamblingaddict {
                     hm.put("1", "-175");
                     return hm;
                 } else{
-                    map.get(user).replace("CurrentCash", "0");
+                    map.get(user).setMoney(0.00);
                     hm.put("nill", "-175");
                 }
             }
@@ -83,7 +85,7 @@ public class gamblingaddict {
                     hm.put("2", "-90");
                     return hm;
                 } else{
-                    map.get(user).replace("CurrentCash", "0");
+                    map.get(user).setMoney(0.00);
                     hm.put("nill", "-90");
                 }
             }
@@ -92,7 +94,7 @@ public class gamblingaddict {
                     hm.put("3", "-35");
                     return hm;
                 } else{
-                    map.get(user).replace("CurrentCash", "0");
+                    map.get(user).setMoney(0.00);
                     hm.put("nill", "-35");
                 }
             }
@@ -119,51 +121,25 @@ public class gamblingaddict {
     public int badroll(String user){
         System.out.println(user);
         if(random(200) == 33){
-            changecoins(user, 4000);
             return 4000;
         }
         if(random(50) == 22){
-            changecoins(user, 800);
             return 800;
         }
         switch (random(6)) {
-            case 1 -> {
-                if(changecoins(user, 175)){
+            case 1, 6 -> {
                     return 175;
-                } else{
-                    map.get(user).replace("CurrentCash", "0");
-                }
             }
-            case 2 -> {
-                if(changecoins(user, 90)){
+            case 2, 5 -> {
                     return 90;
-                } else{
-                    map.get(user).replace("CurrentCash", "0");
-                }
             }
-            case 3 -> {
-                if(changecoins(user, 35)){
+            case 3, 4 -> {
                     return 35;
-                } else{
-                    map.get(user).replace("CurrentCash", "0");
-                }
-            }
-            case 4 -> {
-                changecoins(user, 35);
-                return 35;
-            }
-            case 5 -> {
-                changecoins(user, 90);
-                return 90;
-            }
-            case 6 -> {
-                changecoins(user, 175);
-                return 175;
             }
         }
         return 0;
     }
-    static ConcurrentHashMap<String,HashMap<String, String>> map;
+    static ConcurrentHashMap<String,user> map;
 
     public gamblingaddict() throws IOException {
 
@@ -176,7 +152,7 @@ public class gamblingaddict {
 
     }
 
-    public static ConcurrentHashMap<String,HashMap<String, String>> getMap(){
+    public static ConcurrentHashMap<String,user> getMap(){
         return map;
     }
 
@@ -190,21 +166,19 @@ public class gamblingaddict {
             oos.flush();
             oos.close();
             fos.close();
-        } catch(Exception e) {}
+        } catch(Exception e) {
+            System.out.println(e);
+        }
     }
 
-    public static void createUser(String userId){
-        map.put(userId, new HashMap<>());
-        map.get(userId).put("CurrentCash", "250");
-        map.get(userId).put("MessageCount", "0");
-        map.get(userId).put("CreationDate", "Joined on " + getSimpleDate() + " at " + getFormattedTime());
+    public static void createUser(String userId, String name){
+        map.put(userId, new user(userId, name));
         writedata();
 
     }
 
     public static void addMsgCount(String userid){
-        map.get(userid).replace("MessageCount", "" + (Integer.parseInt(map.get(userid).get("MessageCount")) + 1));
-        return;
+        map.get(userid).addMsgCount();
     }
 
     public void retrieveData(){
@@ -214,25 +188,26 @@ public class gamblingaddict {
             FileInputStream fis=new FileInputStream(toRead);
             ObjectInputStream ois=new ObjectInputStream(fis);
 
-            map=(ConcurrentHashMap<String,HashMap<String, String>>)ois.readObject();
+            map=(ConcurrentHashMap<String,user>)ois.readObject();
 
             ois.close();
             fis.close();
-            /*print All data in MAP
-            for(Map.Entry<String,String> m :mapInFile.entrySet()){
+
+            for(Map.Entry<String,user> m :map.entrySet()){
                 System.out.println(m.getKey()+" : "+m.getValue());
             }
-             */
-        } catch(Exception e) {}
+
+        } catch(Exception e) {
+            System.out.println(e);
+        }
     }
 
     public void clear() throws IOException {
-        for(HashMap.Entry<String, HashMap<String, String>> entry : map.entrySet()) {
+        for(HashMap.Entry<String, user> entry : map.entrySet()) {
             String key = entry.getKey();
             map.remove(key);
         }
-        map.put("test", new HashMap<>());
-        map.get("test").put("test", "test");
+        map.put("test", new user("test", "test"));
 
         writedata();
 
