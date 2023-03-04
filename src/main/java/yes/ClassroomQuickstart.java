@@ -22,7 +22,7 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
-public class ClassroomQuickstart {
+public class ClassroomQuickstart { // I LOVE COPY AND PASTING
     private static final String APPLICATION_NAME = "Google Classroom API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";

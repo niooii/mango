@@ -44,7 +44,7 @@ import org.json.simple.JSONArray;
 
 public class Listeners extends ListenerAdapter {
 
-    public String openaikey = "Bearer ";
+    public String openaikey = "Bearer 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";
 
     public Listeners() throws IOException {
     }

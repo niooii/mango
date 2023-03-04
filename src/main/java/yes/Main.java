@@ -28,7 +28,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
-        JDA bot = JDABuilder.createDefault("token here", GatewayIntent.GUILD_MESSAGES,
+        JDA bot = JDABuilder.createDefault("MTA3NDE2MDMzNzA0NzI1NzE3OA.GRnNov.JL4IZ9QYN29MNUGnRkZi3tC9TXWvk4X8pD7dzQ", GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.MESSAGE_CONTENT,
                         GatewayIntent.GUILD_MEMBERS,
                         GatewayIntent.GUILD_VOICE_STATES,
